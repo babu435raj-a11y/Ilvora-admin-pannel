@@ -1,0 +1,39 @@
+{
+  "company": {
+    "legalName": "ILVORA Healthcare Private Limited",
+    "registeredOffice": "Kerala, India",
+    "registrationNumber": "To be updated",
+    "cin": "To be updated",
+    "gstin": "To be updated"
+  },
+  "services": [
+    {
+      "id": "hospitals",
+      "title": "Hospitals & Clinics",
+      "description": "Patient-centred clinical environments designed to bring trusted care closer to communities.",
+      "image": "assets/services-hospitals-clinics.jpeg",
+      "offerings": []
+    },
+    {
+      "id": "pharmacy",
+      "title": "Pharmacy",
+      "description": "Trusted medicines and responsible pharmacy services supporting safer, more convenient care.",
+      "image": "assets/services-pharmacy.jpeg",
+      "offerings": []
+    },
+    {
+      "id": "laboratory",
+      "title": "Health Laboratory",
+      "description": "Accurate diagnostic insights that help clinicians and patients make informed decisions.",
+      "image": "assets/services-health-laboratory.jpeg",
+      "offerings": []
+    }
+  ],
+  "careers": {
+    "vacancies": []
+  },
+  "opportunity": {
+    "projects": []
+  },
+  "gallery": []
+}

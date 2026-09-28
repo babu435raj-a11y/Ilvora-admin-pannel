@@ -1,0 +1,8 @@
+{
+  "name": "ilvora-healthcare-site",
+  "private": true,
+  "type": "module",
+  "dependencies": {
+    "@netlify/blobs": "latest"
+  }
+}

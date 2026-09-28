@@ -1,0 +1,158 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>ILVORA Admin</title>
+<style>
+:root{--navy:#062c36;--teal:#0f6b72;--gold:#c9973e;--gold2:#e2bd6a;--cream:#f7f0e4;--paper:#fffaf2;--ink:#18343a;--muted:#63777b;--line:rgba(6,44,54,.12);--danger:#9f2f2f}
+*{box-sizing:border-box}body{margin:0;background:#f5f1e8;color:var(--ink);font-family:Inter,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}.top{background:var(--navy);color:#fff;padding:18px 22px;position:sticky;top:0;z-index:20}.top-inner{max-width:1200px;margin:auto;display:flex;align-items:center;justify-content:space-between;gap:15px}.brand{display:flex;align-items:center;gap:12px;font-weight:800}.brand img{width:100px;max-height:48px;object-fit:contain}.brand span{letter-spacing:.08em}.wrap{max-width:1200px;margin:28px auto;padding:0 18px}.setup,.card{background:#fff;border:1px solid var(--line);border-radius:22px;box-shadow:0 12px 35px rgba(6,44,54,.07);padding:22px;margin-bottom:20px}.setup h2,.card h2{margin:0 0 8px;font-family:Georgia,serif;color:var(--navy)}.muted{color:var(--muted);line-height:1.6}.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:15px}.grid3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:15px}.field{display:flex;flex-direction:column;gap:7px}.field label{font-weight:750;font-size:.9rem}.field input,.field textarea,.field select{width:100%;border:1px solid #cbd5d6;border-radius:12px;padding:12px 13px;background:#fff;color:var(--ink);outline:none}.field textarea{min-height:105px;resize:vertical}.field input:focus,.field textarea:focus,.field select:focus{border-color:var(--teal);box-shadow:0 0 0 3px rgba(15,107,114,.1)}.actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:16px}.btn{border:0;border-radius:999px;padding:11px 17px;font-weight:800;cursor:pointer}.primary{background:var(--gold);color:#172d30}.dark{background:var(--navy);color:#fff}.light{background:#edf2f1;color:var(--navy)}.danger{background:#f8e7e7;color:var(--danger)}.tabs{display:flex;gap:8px;overflow:auto;padding-bottom:5px;margin-bottom:18px}.tab{white-space:nowrap;border:1px solid var(--line);background:#fff;padding:11px 16px;border-radius:999px;font-weight:800;color:var(--navy);cursor:pointer}.tab.active{background:var(--navy);color:#fff}.panel{display:none}.panel.active{display:block}.item{border:1px solid var(--line);border-radius:18px;padding:18px;margin:14px 0;background:linear-gradient(180deg,#fff,#fffaf2)}.item-head{display:flex;justify-content:space-between;gap:10px;align-items:center}.item h3{margin:0;color:var(--navy);font-family:Georgia,serif}.status{display:inline-block;padding:5px 9px;border-radius:999px;background:#edf5f4;font-size:.75rem;font-weight:800}.notice{padding:12px 15px;border-radius:14px;background:#fff6df;color:#70521b;margin:12px 0}.success{background:#e8f6ef;color:#1c6640}.error{background:#fbe9e9;color:#8a2727}.hidden{display:none!important}.file-row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}.preview{width:100px;height:75px;border-radius:12px;object-fit:cover;border:1px solid var(--line)}.small{font-size:.82rem;color:var(--muted)}.footer-note{text-align:center;color:var(--muted);font-size:.82rem;padding:20px}.top button{background:rgba(255,255,255,.12);color:#fff;border:1px solid rgba(255,255,255,.25);padding:9px 13px;border-radius:999px;font-weight:700}@media(max-width:750px){.grid,.grid3{grid-template-columns:1fr}.wrap{padding:0 12px}.setup,.card{padding:17px}.top-inner{align-items:flex-start}.brand span{display:none}}
+</style>
+</head>
+<body>
+<header class="top"><div class="top-inner"><div class="brand"><img src="../assets/ilvora-logo.png" alt="ILVORA"><span>ADMIN PANEL</span></div><button id="logout">Clear session</button></div></header>
+<main class="wrap">
+<section class="setup">
+<h2>Connect this admin to your GitHub repository</h2>
+<p class="muted">This panel updates the same GitHub repository that hosts your ILVORA website. Your access token is kept only in this browser session and is never written into the website files.</p>
+<div class="grid">
+<div class="field"><label>GitHub owner / username</label><input id="owner" placeholder="e.g. baburaj..."></div>
+<div class="field"><label>Repository name</label><input id="repo" placeholder="e.g. ILVORA-GITHUB-READY"></div>
+<div class="field"><label>Branch</label><input id="branch" value="main"></div>
+<div class="field"><label>GitHub fine-grained token</label><input id="token" type="password" placeholder="github_pat_..."></div>
+</div>
+<div class="actions"><button class="btn dark" id="connect">Connect & Load</button></div>
+<div class="notice">The token needs repository <b>Contents: Read and write</b> permission for this repository. Do not paste the token into your website code.</div>
+<div id="connectionMsg" class="notice hidden"></div>
+</section>
+
+<div id="app" class="hidden">
+<div class="tabs">
+<button class="tab active" data-tab="services">Services</button>
+<button class="tab" data-tab="careers">Careers</button>
+<button class="tab" data-tab="opportunity">Opportunity</button>
+<button class="tab" data-tab="gallery">Gallery & Media</button>
+<button class="tab" data-tab="company">Company Details</button>
+</div>
+
+<section id="services" class="panel active card">
+<h2>Services</h2><p class="muted">Edit the service cards shown on the public website. Offerings are displayed when visitors open a service.</p>
+<div id="servicesList"></div>
+<button class="btn light" id="addService">+ Add Service</button>
+<div class="actions"><button class="btn primary" id="saveServices">Save Services to GitHub</button></div>
+</section>
+
+<section id="careers" class="panel card">
+<h2>Careers</h2><p class="muted">Create, edit or remove current job vacancies. Saved vacancies appear in the public Careers section.</p>
+<div id="careersList"></div>
+<button class="btn light" id="addCareer">+ Add Vacancy</button>
+<div class="actions"><button class="btn primary" id="saveCareers">Save Careers to GitHub</button></div>
+</section>
+
+<section id="opportunity" class="panel card">
+<h2>Opportunity</h2><p class="muted">Add future projects or partnership opportunities. Only items marked <b>Published</b> appear publicly.</p>
+<div id="opportunityList"></div>
+<button class="btn light" id="addOpportunity">+ Add Opportunity</button>
+<div class="actions"><button class="btn primary" id="saveOpportunity">Save Opportunities to GitHub</button></div>
+</section>
+
+<section id="gallery" class="panel card">
+<h2>Gallery & Media</h2><p class="muted">Add an image/video by URL or upload a smaller media file into the repository. GitHub Pages is not designed for very large video files; keep uploads modest.</p>
+<div class="grid">
+<div class="field"><label>Caption</label><input id="galleryCaption" placeholder="Short caption"></div>
+<div class="field"><label>Media URL (optional)</label><input id="galleryUrl" placeholder="https://... or assets/gallery/file.jpg"></div>
+</div>
+<div class="field" style="margin-top:15px"><label>Or choose a file to upload to GitHub</label><input id="galleryFile" type="file" accept="image/*,video/*"></div>
+<div id="galleryUploadMsg" class="small"></div>
+<div class="actions"><button class="btn primary" id="addGallery">Add to Gallery</button></div>
+<div id="galleryList"></div>
+<div class="actions"><button class="btn primary" id="saveGallery">Save Gallery to GitHub</button></div>
+</section>
+
+<section id="company" class="panel card">
+<h2>Company Registration Details</h2><p class="muted">These values are displayed in the public Contact section. Enter the official information when available.</p>
+<div class="grid">
+<div class="field"><label>Legal registered company name</label><input id="legalName"></div>
+<div class="field"><label>Registered office</label><input id="registeredOffice"></div>
+<div class="field"><label>Registration Number</label><input id="registrationNumber"></div>
+<div class="field"><label>CIN</label><input id="cin"></div>
+<div class="field"><label>GSTIN</label><input id="gstin"></div>
+</div>
+<div class="actions"><button class="btn primary" id="saveCompany">Save Company Details to GitHub</button></div>
+</section>
+</div>
+<div id="globalMsg" class="notice hidden"></div>
+<div class="footer-note">ILVORA Healthcare · GitHub Admin Panel</div>
+</main>
+<script>
+const $=id=>document.getElementById(id);
+let content=null, fileSha=null;
+const state={services:[],careers:{vacancies:[]},opportunity:{projects:[]},gallery:[],company:{}};
+function b64encode(s){const bytes=new TextEncoder().encode(s);let bin='';for(let i=0;i<bytes.length;i+=0x8000)bin+=String.fromCharCode(...bytes.subarray(i,i+0x8000));return btoa(bin)}
+function b64decode(s){const bin=atob(s.replace(/\n/g,''));const bytes=Uint8Array.from(bin,c=>c.charCodeAt(0));return new TextDecoder().decode(bytes)}
+function msg(text,kind=''){const el=$('connectionMsg');el.textContent=text;el.className='notice '+kind}
+function globalMsg(text,kind='success'){const el=$('globalMsg');el.textContent=text;el.className='notice '+kind;setTimeout(()=>el.className='notice hidden',4500)}
+function repo(){return {owner:$('owner').value.trim(),repo:$('repo').value.trim(),branch:$('branch').value.trim()||'main',token:$('token').value.trim()}}
+function api(path,opts={}){const r=repo();return fetch('https://api.github.com'+path,{...opts,headers:{Accept:'application/vnd.github+json','X-GitHub-Api-Version':'2022-11-28',Authorization:'Bearer '+r.token,...(opts.headers||{})}})}
+async function getContentFile(){
+ const r=repo(); if(!r.owner||!r.repo||!r.token)throw new Error('Enter GitHub owner, repository and token.');
+ const url=`/repos/${encodeURIComponent(r.owner)}/${encodeURIComponent(r.repo)}/contents/data/content.json?ref=${encodeURIComponent(r.branch)}`;
+ const res=await api(url); if(!res.ok)throw new Error('Could not read data/content.json. Check the repository, branch and token permissions.');
+ const d=await res.json(); fileSha=d.sha; return JSON.parse(b64decode(d.content));
+}
+async function putContentFile(data,message){
+ const r=repo(); const url=`/repos/${encodeURIComponent(r.owner)}/${encodeURIComponent(r.repo)}/contents/data/content.json`;
+ const body={message,content:b64encode(JSON.stringify(data,null,2)),branch:r.branch}; if(fileSha)body.sha=fileSha;
+ const res=await api(url,{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});
+ if(!res.ok){const e=await res.json().catch(()=>({}));throw new Error(e.message||'GitHub could not save the file.');}
+ const out=await res.json();fileSha=out.content?.sha||fileSha;content=data;state.services=data.services||[];state.careers=data.careers||{vacancies:[]};state.opportunity=data.opportunity||{projects:[]};state.gallery=data.gallery||[];state.company=data.company||{};globalMsg('Saved to GitHub. The public site will update after GitHub Pages publishes the commit.','success');
+}
+function esc(v){return String(v??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]) )}
+function renderServices(){const box=$('servicesList');box.innerHTML=state.services.map((s,i)=>`<div class="item" data-i="${i}"><div class="item-head"><h3>${esc(s.title||'Untitled service')}</h3><button class="btn danger remove-service">Remove</button></div><div class="grid" style="margin-top:14px"><div class="field"><label>Title</label><input data-k="title" value="${esc(s.title)}"></div><div class="field"><label>Image path / URL</label><input data-k="image" value="${esc(s.image)}"></div></div><div class="field" style="margin-top:14px"><label>Description</label><textarea data-k="description">${esc(s.description)}</textarea></div><div class="field" style="margin-top:14px"><label>Offerings — one per line</label><textarea data-k="offerings">${esc((s.offerings||[]).join('\\n'))}</textarea></div></div>`).join('')||'<p class="muted">No services yet.</p>';box.querySelectorAll('.item').forEach(item=>{const i=+item.dataset.i;item.querySelectorAll('[data-k]').forEach(el=>el.addEventListener('input',()=>{state.services[i][el.dataset.k]=el.dataset.k==='offerings'?el.value.split('\\n').map(x=>x.trim()).filter(Boolean):el.value}));item.querySelector('.remove-service').onclick=()=>{state.services.splice(i,1);renderServices()}})}
+function renderCareers(){const box=$('careersList');box.innerHTML=state.careers.vacancies.map((v,i)=>`<div class="item" data-i="${i}"><div class="item-head"><h3>${esc(v.title||'New vacancy')}</h3><button class="btn danger remove-career">Remove</button></div><div class="grid3" style="margin-top:14px"><div class="field"><label>Job title</label><input data-k="title" value="${esc(v.title)}"></div><div class="field"><label>Department</label><input data-k="department" value="${esc(v.department)}"></div><div class="field"><label>Location</label><input data-k="location" value="${esc(v.location)}"></div><div class="field"><label>Employment type</label><input data-k="type" value="${esc(v.type)}"></div></div><div class="field" style="margin-top:14px"><label>Description</label><textarea data-k="description">${esc(v.description)}</textarea></div></div>`).join('')||'<p class="muted">No vacancies. Add one when ready.</p>';box.querySelectorAll('.item').forEach(item=>{const i=+item.dataset.i;item.querySelectorAll('[data-k]').forEach(el=>el.addEventListener('input',()=>state.careers.vacancies[i][el.dataset.k]=el.value));item.querySelector('.remove-career').onclick=()=>{state.careers.vacancies.splice(i,1);renderCareers()}})}
+function renderOpportunity(){const box=$('opportunityList');box.innerHTML=state.opportunity.projects.map((p,i)=>`<div class="item" data-i="${i}"><div class="item-head"><h3>${esc(p.title||'New opportunity')}</h3><button class="btn danger remove-op">Remove</button></div><div class="grid" style="margin-top:14px"><div class="field"><label>Title</label><input data-k="title" value="${esc(p.title)}"></div><div class="field"><label>Category</label><input data-k="category" value="${esc(p.category)}"></div><div class="field"><label>External link (optional)</label><input data-k="link" value="${esc(p.link)}"></div><div class="field"><label>Visibility</label><select data-k="published"><option value="false" ${!p.published?'selected':''}>Draft — hidden</option><option value="true" ${p.published?'selected':''}>Published — visible</option></select></div></div><div class="field" style="margin-top:14px"><label>Description</label><textarea data-k="description">${esc(p.description)}</textarea></div></div>`).join('')||'<p class="muted">No opportunities yet.</p>';box.querySelectorAll('.item').forEach(item=>{const i=+item.dataset.i;item.querySelectorAll('[data-k]').forEach(el=>el.addEventListener('input',()=>state.opportunity.projects[i][el.dataset.k]=el.dataset.k==='published'?el.value==='true':el.value));item.querySelector('.remove-op').onclick=()=>{state.opportunity.projects.splice(i,1);renderOpportunity()}})}
+function renderGallery(){const box=$('galleryList');box.innerHTML=state.gallery.map((g,i)=>`<div class="item" data-i="${i}"><div class="item-head"><div><b>${esc(g.caption||'Untitled media')}</b><div class="small">${esc(g.type||'image')} · ${esc(g.url||'')}</div></div><button class="btn danger remove-gallery">Remove</button></div></div>`).join('')||'<p class="muted">No managed gallery media yet.</p>';box.querySelectorAll('.item').forEach(item=>{const i=+item.dataset.i;item.querySelector('.remove-gallery').onclick=()=>{state.gallery.splice(i,1);renderGallery()}})}
+function renderCompany(){const c=state.company||{};$('legalName').value=c.legalName||'';$('registeredOffice').value=c.registeredOffice||'';$('registrationNumber').value=c.registrationNumber||'';$('cin').value=c.cin||'';$('gstin').value=c.gstin||''}
+function renderAll(){renderServices();renderCareers();renderOpportunity();renderGallery();renderCompany()}
+async function connect(){try{sessionStorage.setItem('ilvora_admin_token',$('token').value.trim());msg('Connecting…');content=await getContentFile();state.services=content.services||[];state.careers=content.careers||{vacancies:[]};state.opportunity=content.opportunity||{projects:[]};state.gallery=content.gallery||[];state.company=content.company||{};renderAll();$('app').classList.remove('hidden');msg('Connected.','success')}catch(e){msg(e.message,'error')}}
+function autoRepo(){
+ const host=location.hostname, path=location.pathname.split('/').filter(Boolean);
+ if(host.endsWith('.github.io')){ if(!$('owner').value)$('owner').value=host.split('.')[0]; if(!$('repo').value&&path.length)$('repo').value=path[0];}
+}
+autoRepo(); $('token').value=sessionStorage.getItem('ilvora_admin_token')||'';
+$('connect').onclick=connect;
+$('logout').onclick=()=>{sessionStorage.removeItem('ilvora_admin_token');$('token').value='';$('app').classList.add('hidden');msg('Session cleared.','')};
+$('addService').onclick=()=>{state.services.push({id:'service-'+Date.now(),title:'New Service',description:'',image:'assets/',offerings:[]});renderServices()};
+$('addCareer').onclick=()=>{state.careers.vacancies.push({title:'New Position',department:'',location:'',type:'',description:''});renderCareers()};
+$('addOpportunity').onclick=()=>{state.opportunity.projects.push({title:'New Opportunity',category:'Partnership',description:'',link:'',published:false});renderOpportunity()};
+$('saveServices').onclick=async()=>{try{await putContentFile({...content,services:state.services},'Update ILVORA services')}catch(e){globalMsg(e.message,'error')}};
+$('saveCareers').onclick=async()=>{try{await putContentFile({...content,careers:state.careers},'Update ILVORA careers')}catch(e){globalMsg(e.message,'error')}};
+$('saveOpportunity').onclick=async()=>{try{await putContentFile({...content,opportunity:state.opportunity},'Update ILVORA opportunities')}catch(e){globalMsg(e.message,'error')}};
+$('saveGallery').onclick=async()=>{try{await putContentFile({...content,gallery:state.gallery},'Update ILVORA gallery')}catch(e){globalMsg(e.message,'error')}};
+$('saveCompany').onclick=async()=>{try{state.company={legalName:$('legalName').value.trim(),registeredOffice:$('registeredOffice').value.trim(),registrationNumber:$('registrationNumber').value.trim(),cin:$('cin').value.trim(),gstin:$('gstin').value.trim()};await putContentFile({...content,company:state.company},'Update ILVORA company details')}catch(e){globalMsg(e.message,'error')}};
+document.querySelectorAll('.tab').forEach(b=>b.onclick=()=>{document.querySelectorAll('.tab').forEach(x=>x.classList.remove('active'));document.querySelectorAll('.panel').forEach(x=>x.classList.remove('active'));b.classList.add('active');$(b.dataset.tab).classList.add('active')});
+$('galleryFile').addEventListener('change',e=>{const f=e.target.files[0];$('galleryUploadMsg').textContent=f?`${f.name} selected — click Add to Gallery to upload.`:''});
+$('addGallery').onclick=async()=>{
+ try{
+  const caption=$('galleryCaption').value.trim(), url=$('galleryUrl').value.trim(), file=$('galleryFile').files[0];
+  if(!url&&!file)throw new Error('Enter a media URL or choose a file.');
+  let finalUrl=url, type='image';
+  if(file){
+    if(file.size>20*1024*1024)throw new Error('Please keep GitHub media uploads below 20 MB. For larger videos, use a hosted media URL.');
+    const r=repo();if(!r.owner||!r.repo||!r.token)throw new Error('Connect to GitHub first.');
+    const clean=file.name.toLowerCase().replace(/[^a-z0-9._-]+/g,'-');
+    const path=`assets/gallery/${Date.now()}-${clean}`;
+    const buf=await file.arrayBuffer();const bytes=new Uint8Array(buf);let bin='';for(let i=0;i<bytes.length;i+=0x8000)bin+=String.fromCharCode(...bytes.subarray(i,i+0x8000));
+    const body={message:`Add ILVORA gallery media ${file.name}`,content:btoa(bin),branch:r.branch};
+    const res=await api(`/repos/${encodeURIComponent(r.owner)}/${encodeURIComponent(r.repo)}/contents/${path}`,{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});
+    if(!res.ok){const e=await res.json().catch(()=>({}));throw new Error(e.message||'Media upload failed.')}
+    finalUrl=path;type=file.type.startsWith('video')?'video':'image';
+  }else{type=/\.(mp4|webm|mov)(\?|$)/i.test(url)?'video':'image'}
+  state.gallery.push({id:'media-'+Date.now(),url:finalUrl,caption,type});
+  $('galleryCaption').value='';$('galleryUrl').value='';$('galleryFile').value='';$('galleryUploadMsg').textContent='';
+  renderGallery();globalMsg('Media added to the gallery list. Click Save Gallery to publish the content change.','success');
+ }catch(e){globalMsg(e.message,'error')}
+};
+</script>
+</body>
+</html>
